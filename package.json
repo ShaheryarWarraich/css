@@ -1,0 +1,34 @@
+{
+  "name": "css-os",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CSS OS — evidence recall and argument-building trainer for Pakistan's CSS exam",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "ingest": "tsx tools/ingest.ts content/source/evidence-bank-v1.xlsx",
+    "judge": "node tools/judge-bridge.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dexie": "^4.4.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "ts-fsrs": "^5.4.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "fake-indexeddb": "^6.2.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^5.0.1"
+  }
+}
