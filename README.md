@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. Progress is stored in your browser only; use Settings → Download backup.
+Or use the hosted app: https://shaheryarwarraich.github.io/css/. Progress is stored in your browser only; use Settings → Download backup.
 
 ## How it works
 

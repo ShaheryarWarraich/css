@@ -92,6 +92,6 @@ What to be strict about:
 
 ## Practical notes
 
-- **Link:** the app is a private page; open it with the link you were sent. Progress is stored in the browser you use, so stick to one device or use Settings → Backup to move it.
+- **Link:** https://shaheryarwarraich.github.io/css/ — open it in Chrome or Safari; on a phone, use "Add to Home Screen" to install it. Progress is stored in the browser you use, so stick to one device or use Settings → Backup to move it.
 - **AI answer checking** is optional and works only when running the app locally with your own AI subscription. Everything else works without it.
 - **Nothing is sent anywhere.** Your progress and review decisions stay on your device until you download and share the file.
