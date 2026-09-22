@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Pack } from './content/types'
-import { db, getSettings, mergePack, type Settings } from './db'
+import type { Pack, Proposal } from './content/types'
+import { db, getSettings, mergePack, mergeProposals, type Settings } from './db'
 import { Browse } from './ui/Browse'
 import { Progress } from './ui/Progress'
 import { Session } from './ui/Session'
@@ -20,6 +20,15 @@ async function syncCorePack(): Promise<void> {
   await db.kv.put({ key: 'core-builtAt', value: pack.builtAt })
 }
 
+async function syncProposals(): Promise<void> {
+  const res = await fetch(`${import.meta.env.BASE_URL}packs/proposals.json`)
+  if (!res.ok) return
+  const doc: { updatedAt: string; proposals: Proposal[] } = await res.json()
+  if ((await db.kv.get('proposals-updatedAt'))?.value === doc.updatedAt) return
+  await mergeProposals(doc.proposals)
+  await db.kv.put({ key: 'proposals-updatedAt', value: doc.updatedAt })
+}
+
 export function App() {
   const [tab, setTab] = useState<Tab>('today')
   const [settings, setSettings] = useState<Settings | null>(null)
@@ -31,6 +40,7 @@ export function App() {
   useEffect(() => {
     syncCorePack()
       .catch((e) => db.items.count().then((n) => (n ? null : setError(String(e.message ?? e)))))
+      .then(() => syncProposals().catch(() => null))
       .then(getSettings)
       .then(setSettings)
   }, [])
@@ -44,7 +54,7 @@ export function App() {
     <>
       <main className="wrap">
         {tab === 'today' && <Today key={rev} settings={settings} onStart={() => setInSession(true)} />}
-        {tab === 'bank' && <Browse />}
+        {tab === 'bank' && <Browse settings={settings} onSettings={setSettings} />}
         {tab === 'progress' && <Progress settings={settings} />}
         {tab === 'settings' && <SettingsPage settings={settings} onChange={(s) => (setSettings(s), refresh())} />}
       </main>

@@ -24,6 +24,8 @@ export interface Fact {
   theoryLink?: string
   benchmark?: { standard?: string; value?: string; lmic?: string; peer?: string; gap?: string }
   pairsWith: string[]
+  memoryHook?: string
+  useAgainst?: string
   chainIds: string[]
   verification: Verification
   verificationNote: string
@@ -75,4 +77,22 @@ export interface Pack {
   quotes: Quote[]
   questions: PastQuestion[]
   issues: Issue[]
+}
+
+/** A drafted Layer-B enrichment awaiting a reviewer's decision inside the app. */
+export interface ProposalFields {
+  qualification: string
+  pairsWith: string[]
+  hook: string
+  useAgainst: string
+  /** a model sentence in different wording from 'proves'; drafted, reviewed */
+  deploy?: string
+}
+export interface Proposal {
+  id: string
+  factId: string
+  field: ProposalFields
+  draftIssues: string[]
+  status: 'pending' | 'approved' | 'revised' | 'rejected'
+  draftedAt: string
 }

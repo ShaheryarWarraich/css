@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Fact } from '../content/types'
-import { db, type CardRow } from '../db'
+import { db, type CardRow, type Settings } from '../db'
+import { Review } from './Review'
 
-export function Browse() {
+export function Browse({ settings, onSettings }: { settings: Settings; onSettings: (s: Settings) => void }) {
+  const [view, setView] = useState<'browse' | 'review'>('browse')
+  const [pending, setPending] = useState(0)
   const [facts, setFacts] = useState<Fact[]>([])
   const [cards, setCards] = useState<Map<string, CardRow>>(new Map())
   const [q, setQ] = useState('')
@@ -12,7 +15,8 @@ export function Browse() {
   useEffect(() => {
     db.items.where('kind').equals('fact').toArray().then((rows) => setFacts(rows.filter((r) => !r.retired).map((r) => r.data as Fact)))
     db.cards.toArray().then((cs) => setCards(new Map(cs.map((c) => [c.id, c]))))
-  }, [])
+    db.proposals.where('status').equals('pending').count().then(setPending)
+  }, [view])
 
   const themes = useMemo(() => [...new Set(facts.map((f) => f.theme))].sort(), [facts])
   const hits = useMemo(() => {
@@ -26,9 +30,20 @@ export function Browse() {
     return c.card.stability >= 21 ? ['good', 'Strong'] : ['mid', 'Learning']
   }
 
+  const header = (
+    <div className="bar">
+      <h1>Evidence bank</h1>
+      <div className="seg">
+        <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}>Browse</button>
+        <button className={view === 'review' ? 'on' : ''} onClick={() => setView('review')}>Review{pending ? ` (${pending})` : ''}</button>
+      </div>
+    </div>
+  )
+  if (view === 'review') return <>{header}<Review settings={settings} onSettings={onSettings} /></>
+
   return (
     <>
-      <h1>Evidence bank</h1>
+      {header}
       <div className="row">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search facts, tags, sources" />
         <select value={theme} onChange={(e) => setTheme(e.target.value)}>

@@ -1,6 +1,6 @@
 # Validation report — core
 
-Built 2026-09-21T22:52:04.346Z from `content/source/evidence-bank-v1.xlsx`.
+Built 2026-09-22T04:04:25.153Z from `content/source/evidence-bank-v1.xlsx`.
 
 **591** facts · **30** chains and maps · **6** quotes · **14** past-paper questions
 

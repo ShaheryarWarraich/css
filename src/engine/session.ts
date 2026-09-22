@@ -1,7 +1,7 @@
 // Builds today's queue under a time budget and records answers.
 import type { FSRS } from 'ts-fsrs'
 import type { Chain, Fact } from '../content/types'
-import { db, type CardRow, type ItemRow, type Settings } from '../db'
+import { applyProposals, db, type CardRow, type ItemRow, type Settings } from '../db'
 import { chainExercise, chainFeedback, factExercise, feedbackFor, type Bank, type Exercise, type Feedback } from './forms'
 import { capHyper, makeScheduler, newCard, ratingFor, retrievability, review, State } from './scheduler'
 
@@ -30,9 +30,11 @@ export interface Loaded {
 
 export async function load(settings: Settings, now = new Date()): Promise<Loaded> {
   const rows = (await db.items.toArray()).filter((i) => !i.retired)
-  const facts = rows.filter((r) => r.kind === 'fact').map((r) => r.data as Fact)
+  const facts = applyProposals(rows.filter((r) => r.kind === 'fact').map((r) => r.data as Fact), await db.proposals.toArray())
+  const factById = new Map(facts.map((f) => [f.id, f]))
+  for (const r of rows) if (r.kind === 'fact') r.data = factById.get(r.id)!
   return {
-    bank: { facts, factById: new Map(facts.map((f) => [f.id, f])) },
+    bank: { facts, factById },
     items: new Map(rows.map((r) => [r.id, r])),
     fsrs: makeScheduler(settings.examDate, now),
     settings,
@@ -99,7 +101,7 @@ export function exerciseFor(L: Loaded, e: QueueEntry): { exercise: Exercise; fee
   const reps = e.card?.card.reps ?? 0
   if (e.item.kind === 'fact') {
     const f = e.item.data as Fact
-    return { exercise: factExercise(f, L.bank, stability, reps, e.item.prevValue), feedback: feedbackFor(f, e.item.prevValue) }
+    return { exercise: factExercise(f, L.bank, stability, reps, e.item.prevValue), feedback: feedbackFor(f, e.item.prevValue, L.bank) }
   }
   const c = e.item.data as Chain
   return { exercise: chainExercise(c, L.bank, stability, reps), feedback: chainFeedback(c) }

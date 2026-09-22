@@ -172,8 +172,10 @@ export function buildPack(wb: XLSX.WorkBook, id: string, name: string): Pack {
       tier: 3,
       tags: splitList(r['CSS Tags']),
       proves,
-      deploy: /https?:\/\//i.test(r['How to Deploy']) ? '' : r['How to Deploy'],
-      whyItMatters: r['Why It Matters'] || undefined,
+      // 496 of 591 rows carry a generated sentence ("Use X (value) to support the claim that <proves>"): it repeats
+      // 'proves' and is dropped rather than shown as a model sentence.
+      deploy: /https?:\/\//i.test(r['How to Deploy']) || /^Use .{0,200} to support the claim that /i.test(r['How to Deploy']) ? '' : r['How to Deploy'],
+      whyItMatters: r['Why It Matters'] && r['Why It Matters'].trim() !== proves.trim() ? r['Why It Matters'] : undefined,
       qualification: qual && !isBoilerplate(qual) ? qual : undefined,
       theoryLink: r['Theory / Legal Link'] || undefined,
       benchmark: Object.values(bench).some(Boolean) ? bench : undefined,

@@ -7,7 +7,7 @@ A free trainer for Pakistan's CSS exam. It does two things:
 
 It trains and judges. It never writes answers for you: FPSC examiners fail stock material.
 
-Status: **release 1.0 — Recall Core.** The plan and roadmap are in [docs/PLAN.md](docs/PLAN.md).
+Status: **release 1.1 — Recall Core + Tier 1 content pass with in-app review.** Plain-language overview for reviewers: [docs/APP-OVERVIEW.md](docs/APP-OVERVIEW.md). Plan and roadmap: [docs/PLAN.md](docs/PLAN.md).
 
 ## Run it
 
@@ -28,6 +28,16 @@ Open http://localhost:5173. Progress is stored in your browser only; use Setting
 | Session builder | `src/engine/session.ts` | Most-forgotten first, time budget, new-item cap, no new material during a backlog, themes interleaved. |
 | Judging | deterministic first; self-check second; optional AI third | `npm run judge` starts a local bridge to your own `claude` CLI (or `JUDGE_CMD="gemini -p"`). Enter `http://127.0.0.1:8787` in Settings. The app works fully without it. |
 | Your own facts | Settings → Add your own facts | Import a sheet in the same format. New rows are marked to learn; changed values return as change cards. |
+
+## Content pass and review
+
+`node tools/enrich.mjs --tier 1` drafts, for each Tier 1 fact, a caveat, pairings, a memory hook and the wrong claim it rebuts, using your `claude` CLI. Drafts land in `content/proposals/` and ship to the app as **pending**. A reviewer approves, edits or rejects them in **Bank → Review**, then downloads a decisions file. Merge it with:
+
+```bash
+node tools/apply-review.mjs content/reviews/<file>.json && npm run ingest
+```
+
+Approved content is written to `content/overrides/layer-b.json`, which `ingest` applies on top of the workbook.
 
 ## Confidence buttons
 

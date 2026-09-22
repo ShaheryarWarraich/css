@@ -1,6 +1,6 @@
 // Usage: npm run ingest  (or: tsx tools/ingest.ts path/to/sheet.xlsx [pack-id])
 // Excel workbook → public/packs/<id>.json + docs/validation-report.md
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import * as XLSX from 'xlsx'
 import { buildPack } from '../src/content/normalize'
 
@@ -13,6 +13,24 @@ if (!file) {
 
 const wb = XLSX.read(readFileSync(file), { type: 'buffer' })
 const pack = buildPack(wb, id, 'CSS Evidence Bank')
+
+// Reviewer-approved Layer-B content (see tools/apply-review.mjs) overrides the workbook's boilerplate.
+const OVR = 'content/overrides/layer-b.json'
+if (existsSync(OVR)) {
+  const overrides = JSON.parse(readFileSync(OVR, 'utf8')) as Record<string, { qualification?: string; pairsWith?: string[]; memoryHook?: string; useAgainst?: string; deploy?: string }>
+  let n = 0
+  for (const f of pack.facts) {
+    const o = overrides[f.id]
+    if (!o) continue
+    if (o.qualification) f.qualification = o.qualification
+    if (o.pairsWith?.length) f.pairsWith = o.pairsWith
+    if (o.memoryHook) f.memoryHook = o.memoryHook
+    if (o.useAgainst) f.useAgainst = o.useAgainst
+    if (o.deploy) f.deploy = o.deploy
+    n++
+  }
+  console.log(`${n} facts carry reviewer-approved Layer-B content`)
+}
 
 mkdirSync('public/packs', { recursive: true })
 writeFileSync(`public/packs/${id}.json`, JSON.stringify(pack))

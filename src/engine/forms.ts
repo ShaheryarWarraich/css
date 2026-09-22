@@ -19,6 +19,10 @@ export interface Feedback {
   sourceUrl?: string
   example?: string
   exampleLabel?: string
+  hook?: string
+  useAgainst?: string
+  pairs?: string[]
+  why?: string
   changedFrom?: string
   flag?: string
 }
@@ -31,8 +35,12 @@ export interface Bank {
 const when = (f: Fact) => (f.period ? ` (${f.period})` : '')
 const sentence = (f: Fact) => (f.titleIsValue ? f.value : `${f.title}${when(f)}: ${f.value}`)
 
-export function feedbackFor(f: Fact, prevValue?: string): Feedback {
+export function feedbackFor(f: Fact, prevValue?: string, bank?: Bank): Feedback {
   return {
+    hook: f.memoryHook,
+    useAgainst: f.useAgainst,
+    why: f.whyItMatters,
+    pairs: bank ? f.pairsWith.map((id) => bank.factById.get(id)).filter((x): x is Fact => !!x).slice(0, 3).map(sentence) : undefined,
     fact: sentence(f),
     soWhat: f.proves || undefined,
     caution: f.qualification,

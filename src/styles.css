@@ -59,3 +59,8 @@ table { width: 100%; border-collapse: collapse; margin-bottom: 10px; } th, td { 
 .cov { margin-bottom: 10px; } .meter { position: relative; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; } .meter i { position: absolute; left: 0; top: 0; bottom: 0; } .meter .seen { background: var(--mid); opacity: .55; } .meter .strong { background: var(--good); }
 .bars { display: flex; align-items: flex-end; gap: 8px; height: 110px; } .bars div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; } .bars i { width: 100%; background: var(--brand); border-radius: 4px 4px 0 0; }
 code { background: var(--soft); padding: 1px 6px; border-radius: 6px; font-size: .85em; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; min-height: 36px; padding: 6px 12px; font-size: .9rem; }
+.seg button.on { background: var(--brand); color: var(--brand-ink); font-weight: 600; }
+.hook { background: var(--soft); border-left: 3px solid var(--brand); padding: 6px 10px; border-radius: 0 8px 8px 0; font-weight: 500; }
+.form label textarea { margin-top: 4px; color: var(--ink); }

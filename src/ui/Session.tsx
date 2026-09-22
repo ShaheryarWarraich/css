@@ -20,7 +20,11 @@ function FeedbackBlock({ fb }: { fb: Feedback }) {
       {fb.changedFrom && <p className="warn">Updated figure. Previously: {fb.changedFrom}</p>}
       <p className="fact">{fb.fact}</p>
       {fb.soWhat && <p><b>So what:</b> {fb.soWhat}</p>}
+      {fb.why && <p><b>Why it matters:</b> {fb.why}</p>}
+      {fb.hook && <p className="hook">{fb.hook}</p>}
       {fb.caution && <p><b>Caution:</b> {fb.caution}</p>}
+      {fb.useAgainst && <p><b>Use it against:</b> {fb.useAgainst}</p>}
+      {fb.pairs && fb.pairs.length > 0 && <p className="small"><b>Pairs with:</b> {fb.pairs.join(' · ')}</p>}
       <p className="muted small">
         {fb.sourceLabel ?? 'Source'}: {fb.sourceUrl ? <a href={fb.sourceUrl} target="_blank" rel="noreferrer">{fb.source}</a> : fb.source}
       </p>
