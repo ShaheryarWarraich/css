@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Pack, Proposal } from './content/types'
-import { db, getSettings, mergePack, mergeProposals, type Settings } from './db'
+import type { Candidate } from './news/types'
+import { db, getSettings, mergeCandidates, mergePack, mergeProposals, type Settings } from './db'
 import { Browse } from './ui/Browse'
+import { News } from './ui/News'
 import { Progress } from './ui/Progress'
 import { Session } from './ui/Session'
 import { SettingsPage } from './ui/SettingsPage'
 import { Today } from './ui/Today'
 
-type Tab = 'today' | 'bank' | 'progress' | 'settings'
+type Tab = 'today' | 'news' | 'bank' | 'progress' | 'settings'
 
 /** Load the bundled pack; merge only when the published pack is newer than what this device has. */
 async function syncCorePack(): Promise<void> {
@@ -29,6 +31,15 @@ async function syncProposals(): Promise<void> {
   await db.kv.put({ key: 'proposals-updatedAt', value: doc.updatedAt })
 }
 
+async function syncCandidates(): Promise<void> {
+  const res = await fetch(`${import.meta.env.BASE_URL}packs/candidates.json`, { cache: 'no-cache' })
+  if (!res.ok) return
+  const doc: { updatedAt: string; candidates: Candidate[] } = await res.json()
+  if ((await db.kv.get('candidates-updatedAt'))?.value === doc.updatedAt) return
+  await mergeCandidates(doc.candidates)
+  await db.kv.put({ key: 'candidates-updatedAt', value: doc.updatedAt })
+}
+
 export function App() {
   const [tab, setTab] = useState<Tab>('today')
   const [settings, setSettings] = useState<Settings | null>(null)
@@ -41,6 +52,7 @@ export function App() {
     syncCorePack()
       .catch((e) => db.items.count().then((n) => (n ? null : setError(String(e.message ?? e)))))
       .then(() => syncProposals().catch(() => null))
+      .then(() => syncCandidates().catch(() => null))
       .then(getSettings)
       .then(setSettings)
   }, [])
@@ -49,11 +61,12 @@ export function App() {
   if (!settings) return <main className="wrap"><p className="muted">Loading the evidence bank…</p></main>
   if (inSession) return <Session settings={settings} onExit={() => (setInSession(false), refresh())} />
 
-  const tabs: [Tab, string][] = [['today', 'Today'], ['bank', 'Bank'], ['progress', 'Progress'], ['settings', 'Settings']]
+  const tabs: [Tab, string][] = [['today', 'Today'], ['news', 'News'], ['bank', 'Bank'], ['progress', 'Progress'], ['settings', 'Settings']]
   return (
     <>
       <main className="wrap">
         {tab === 'today' && <Today key={rev} settings={settings} onStart={() => setInSession(true)} />}
+        {tab === 'news' && <News />}
         {tab === 'bank' && <Browse settings={settings} onSettings={setSettings} />}
         {tab === 'progress' && <Progress settings={settings} />}
         {tab === 'settings' && <SettingsPage settings={settings} onChange={(s) => (setSettings(s), refresh())} />}

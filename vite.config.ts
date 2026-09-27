@@ -9,7 +9,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
-      workbox: { globPatterns: ['**/*.{js,css,html,svg,json}'], maximumFileSizeToCacheInBytes: 5_000_000 },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,json}'],
+        // News changes several times a day: fetch it fresh, fall back to the last copy when offline.
+        globIgnores: ['news/**', 'packs/candidates.json'],
+        runtimeCaching: [{ urlPattern: /\/(news\/.*|packs\/candidates)\.json$/, handler: 'NetworkFirst', options: { cacheName: 'news', networkTimeoutSeconds: 6, expiration: { maxEntries: 30 } } }],
+        maximumFileSizeToCacheInBytes: 5_000_000,
+      },
       manifest: {
         name: 'CSS OS',
         short_name: 'CSS OS',

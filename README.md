@@ -7,7 +7,7 @@ A free trainer for Pakistan's CSS exam. It does two things:
 
 It trains and judges. It never writes answers for you: FPSC examiners fail stock material.
 
-Status: **release 1.1 — Recall Core + Tier 1 content pass with in-app review.** Plain-language overview for reviewers: [docs/APP-OVERVIEW.md](docs/APP-OVERVIEW.md). Plan and roadmap: [docs/PLAN.md](docs/PLAN.md).
+Status: **release 1.2 — Recall Core, Tier 1 content pass with in-app review, and the News module.** Plain-language overview for reviewers: [docs/APP-OVERVIEW.md](docs/APP-OVERVIEW.md). Plan and roadmap: [docs/PLAN.md](docs/PLAN.md).
 
 ## Run it
 
@@ -38,6 +38,36 @@ node tools/apply-review.mjs content/reviews/<file>.json && npm run ingest
 ```
 
 Approved content is written to `content/overrides/layer-b.json`, which `ingest` applies on top of the workbook.
+
+## News module
+
+A separate module inside the same app: one place to read Pakistan's main English and Urdu papers and a few international outlets, a shortlist judged against the *Evidence Extraction Criteria*, and candidate facts extracted for review.
+
+```bash
+npm run news:free      # fetch, clean, rule scores. No AI, no tokens.
+npm run news           # adds AI assessment (top 40/day) and fact extraction, via your own CLI
+npm run news:publish   # the above, then build and push to the public link
+npm run news:export    # approved news facts → Excel in the Master Sheet layout
+npm run news:schedule  # macOS: run news:publish at 07:00, 13:00, 19:00 (needs a permanent folder)
+```
+
+| Stage | File | Tokens |
+|---|---|---|
+| 1. Aggregate: fetch 34 feeds, strip HTML, drop sport/showbiz, dedupe, cluster | `news/lib/parse.mjs`, `clean.mjs` | 0 |
+| 2a. Rule scoring: 11 criteria as hard-coded checks, 4 caution flags | `news/lib/prescore.mjs`, `news/lexicon.json` | 0 |
+| 2b. Assessment: title + snippet of the top 40, codes back | `news/lib/assess.mjs` | ~3–4k per 20 stories |
+| 3a. Article text → evidence sentences only, max 1,200 characters | `news/lib/article.mjs` | 0 |
+| 3b. Extraction: Master Sheet fields, then figure and quote guards | `news/lib/extract.mjs` | ~2k per 5 stories |
+| 3c. Match against the bank: new / update / conflict / duplicate | `news/lib/match.mjs` | 0 |
+
+Rules the module keeps:
+- Headlines and snippets are shown as published and link to the original. Article text is never stored or published.
+- A figure that does not appear word-for-word in the article is rejected before review.
+- A newspaper is a secondary source: news facts enter the bank flagged "verify against primary source" until a reviewer ticks that they did.
+- Nothing enters the bank without approval in **Bank → Review → New evidence**.
+- Feeds, keywords and criteria are plain JSON in `news/`: edit `sources.json` to add an outlet, `lexicon.json` to tune relevance.
+
+Set `NEWS_CMD="gemini -p"` (or any CLI that reads a prompt on stdin) to use a different model.
 
 ## Confidence buttons
 

@@ -10,10 +10,17 @@
     "preview": "vite preview",
     "ingest": "tsx tools/ingest.ts content/source/evidence-bank-v1.xlsx",
     "judge": "node tools/judge-bridge.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "news": "node news/run.mjs",
+    "news:free": "node news/run.mjs --no-llm",
+    "news:publish": "node news/run.mjs && node news/publish.mjs",
+    "news:export": "node news/export.mjs",
+    "news:schedule": "node news/schedule.mjs install",
+    "news:unschedule": "node news/schedule.mjs uninstall"
   },
   "dependencies": {
     "dexie": "^4.4.6",
+    "fast-xml-parser": "^5.11.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "ts-fsrs": "^5.4.2",

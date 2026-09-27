@@ -64,3 +64,14 @@ code { background: var(--soft); padding: 1px 6px; border-radius: 6px; font-size:
 .seg button.on { background: var(--brand); color: var(--brand-ink); font-weight: 600; }
 .hook { background: var(--soft); border-left: 3px solid var(--brand); padding: 6px 10px; border-radius: 0 8px 8px 0; font-weight: 500; }
 .form label textarea { margin-top: 4px; color: var(--ink); }
+.days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; } .days .chip { flex: none; white-space: nowrap; gap: 6px; }
+.news li { cursor: default; } .news li.read .headline { color: var(--muted); font-weight: 500; }
+.headline { display: block; font-weight: 650; font-size: 1.02rem; color: var(--ink); text-decoration: none; margin: 2px 0 4px; line-height: 1.4; } .headline:hover { text-decoration: underline; }
+[lang='ur'] .headline, [lang='ur'] .snippet, .quote[dir='rtl'] { font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Noto Naskh Arabic', system-ui, sans-serif; line-height: 1.9; }
+.snippet { color: var(--muted); margin: 0 0 6px; }
+.star { border: 0; background: none; min-height: 0; padding: 0 4px; font-size: 1.2rem; color: var(--mid); }
+.badges, .assess { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
+.badge { font-size: .7rem; padding: 1px 7px; border-radius: 99px; background: var(--soft); color: var(--muted); } .badge.warnb { color: var(--mid); }
+.assess .pill { color: var(--brand); } .why { flex-basis: 100%; margin: 4px 0 0; font-weight: 500; }
+.quote { margin: 8px 0 12px; padding: 8px 12px; border-left: 3px solid var(--line); color: var(--muted); font-size: .95rem; }
+.tabs button { font-size: .9rem; }

@@ -32,6 +32,38 @@ if (existsSync(OVR)) {
   console.log(`${n} facts carry reviewer-approved Layer-B content`)
 }
 
+// Reviewer-approved facts extracted from the news (see news/run.mjs and tools/apply-review.mjs).
+const ADD = 'content/additions/news-facts.json'
+if (existsSync(ADD)) {
+  const { facts: extra } = JSON.parse(readFileSync(ADD, 'utf8')) as { facts: any[] }
+  const byId = new Map(pack.facts.map((f) => [f.id, f]))
+  let added = 0
+  let updated = 0
+  for (const a of extra) {
+    const status = a.primaryChecked ? `Verified against primary source by ${a.reviewer}` : `Reported by ${a.reportedBy}; verify against ${a.src || 'the primary source'}`
+    const source = a.src ? `${a.src} (reported by ${a.reportedBy})` : a.reportedBy
+    const caution = [a.method, ...(a.cautions ?? []).map((c: string) => ({ DENOM: 'Check the denominator before comparing.', DEF: 'Definition-sensitive: state which definition.', STOCKFLOW: 'Keep stock and flow figures separate.', IMF: 'Commitment, disbursement and outstanding credit are different.', RANK: 'A rank change may reflect other countries.', CAUSAL: 'Association, not proven cause.', HIST: 'Historical figure, not current.' })[c])].filter(Boolean).join(' ')
+    const old = byId.get(a.id)
+    if (a.op === 'update' && old) {
+      Object.assign(old, { value: a.value, period: a.period || old.period, source, sourceUrl: a.reportedUrl, proves: a.proves || old.proves, qualification: caution || old.qualification, verification: a.primaryChecked ? 'verified' : 'needs-audit', verificationNote: status })
+      old.titleIsValue = false
+      updated++
+      continue
+    }
+    if (old) continue
+    pack.facts.push({
+      id: a.id, theme: a.theme, category: a.theme, title: a.title, value: a.value, titleIsValue: false, period: a.period || undefined,
+      source, sourceUrl: a.reportedUrl, evidenceType: a.type, role: a.role, priority: a.t1 ? 'A' : 'B', tier: a.t1 ? 1 : 3, tags: a.tags ?? [],
+      proves: a.proves, deploy: '', qualification: caution || undefined, pairsWith: a.conflictWith ? [a.conflictWith] : [], chainIds: a.map ? [a.map] : [],
+      verification: a.primaryChecked ? 'verified' : 'needs-audit', verificationNote: status,
+    })
+    const chain = pack.chains.find((c) => c.id === a.map)
+    if (chain && !chain.evidenceIds.includes(a.id)) chain.evidenceIds.push(a.id)
+    added++
+  }
+  console.log(`news facts: ${added} added, ${updated} updated`)
+}
+
 mkdirSync('public/packs', { recursive: true })
 writeFileSync(`public/packs/${id}.json`, JSON.stringify(pack))
 

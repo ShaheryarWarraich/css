@@ -1,6 +1,6 @@
 # CSS OS — App Overview
 
-*For Ahsan (reviewer, CSS 2027 candidate). Version 1.1, 22 September 2026.*
+*For Ahsan (reviewer, CSS 2027 candidate). Version 1.2, 27 September 2026.*
 
 ## What this is
 
@@ -53,15 +53,22 @@ Facts are never marked "done". The gap between reviews grows as your memory stre
 - Import your own Excel sheet in the same format: new rows are marked "to learn", changed figures come back as "updated" cards.
 - Works offline once opened; installable on a phone.
 
-**Version 1.1 — Tier 1 content pass + in-app review (this version)**
+**Version 1.1 — Tier 1 content pass + in-app review (22 Sep 2026)**
 - For each Tier 1 fact, an AI drafted the five things the workbook left blank: a **caveat** (what the figure does not prove), 2–3 **pairings** with other facts, a **memory hook** ("22.7% → four in five working-age women counted outside the labour force"), the **wrong claim** the fact rebuts, and a **model sentence** showing how the fact could sit inside a paragraph.
 - The AI was given only the fact and other facts from the bank, and told not to invent figures. The review screen flags any figure in a draft that is not in the fact or its pairings, so you can see at a glance where it may have gone beyond the bank.
 - A **Review** screen inside the Bank tab where a reviewer approves, edits or rejects each draft. Nothing reaches learners until it is approved.
 - Approved content appears immediately in your own drills; it goes to everyone in the next release after the maintainer merges your decisions.
 
+**Version 1.2 — News (this version)**
+- A **News** tab: every story from Dawn, Express Tribune, The News, The Nation, Business Recorder, Geo, ARY, Jang, Express, Nawaiwaqt, BBC Urdu, Independent Urdu, DW Urdu, Al Jazeera, BBC, The Guardian, New York Times, The Diplomat, DW and The Economist, in one list. Headlines and snippets are exactly as published; tapping opens the original. Sport and showbiz are filtered out.
+- Each story carries small badges showing which of the evidence criteria it meets (Pakistan relevance, a specific figure, an authoritative source, a trend, a comparison, a legal anchor…), and warnings where a figure is easy to misuse (stock vs flow, IMF commitment vs disbursement, rankings, definitions).
+- **Shortlist:** the stories most likely to contain evidence worth adding to the bank, with what each could prove, which papers it serves, and which argument map it strengthens.
+- **New evidence:** facts pulled out of shortlisted stories, waiting in Bank → Review → New evidence. Every figure was checked to appear word-for-word in the article. A figure that did not was thrown away automatically.
+- The app tells you when a news fact **updates** or **conflicts with** something already in the bank.
+
 ## Your role, Ahsan
 
-You are the reviewer and the first real user. Two things:
+You are the reviewer and the first real user. Three things:
 
 **1. Review the Tier 1 drafts (Bank → Review).**
 - Enter your name once; it is attached to every decision.
@@ -78,17 +85,24 @@ What to be strict about:
 - **Overclaiming.** A caveat should say what the number does *not* prove, concretely, not "check the source".
 - **Exam usefulness.** Would this help you write a better paragraph under time pressure? If not, edit or reject.
 
-**2. Use the app for your own preparation, and tell us what is wrong with it.**
+**2. Review new evidence from the news (Bank → Review → New evidence).**
+- Open the article from the card and read the quoted sentence in context.
+- Fix the indicator name, the period and the primary source if the draft got them wrong. The primary source is the body the figure belongs to (PBS, SBP, IMF), not the newspaper.
+- If you checked the figure in the original report, tick the box saying so. If you did not, approve anyway if the newspaper is reliable: the fact will carry a "verify before citing" flag.
+- Reject anything vague, anything that is a politician's claim rather than a figure from a named body, and anything you would not use in a 20-mark answer.
+- "Updates an existing fact" means approving replaces the old value, and everyone who learned the old one gets a card showing the change.
+
+**3. Use the app for your own preparation, and tell us what is wrong with it.**
 - Do a session most days.
 - Note anything that feels wrong: a bad question, an unfair grading, a figure you believe is out of date, a form that wastes time, anything confusing.
 - Send the notes with your review file, or message directly. Specific beats polite: "E235's MCQ options are all obviously wrong" is more useful than "MCQs could be better".
 
 ## What's next
 
-- **1.2 — Argument Engine.** Question decoder (what is this question actually asking?), timed outline trainer, "deploy this fact in two sentences" drills, and an AI check with a rubric built from examiner reports. Past-paper dataset 2016–2026 tagged by theme.
-- **1.3 — Exam Conditions.** 3-hour timed simulator, 20-mark answer evaluation, précis trainer, personal English error log.
-- **1.4 — Public release.** Polished phone app, contribution guide, a release calendar so figures update when the Economic Survey, HDR, CPI and others come out.
-- **Phase 2 — NEWS OS.** A news reader across Pakistan's English and Urdu papers that shows how each outlet framed an event, and feeds new evidence into the bank.
+- **1.3 — Argument Engine.** Question decoder (what is this question actually asking?), timed outline trainer, "deploy this fact in two sentences" drills, and an AI check with a rubric built from examiner reports. Past-paper dataset 2016–2026 tagged by theme.
+- **1.4 — Exam Conditions.** 3-hour timed simulator, 20-mark answer evaluation, précis trainer, personal English error log.
+- **1.5 — Public release.** Polished phone app, contribution guide, a release calendar so figures update when the Economic Survey, HDR, CPI and others come out.
+- **NEWS OS, next steps.** Show how different outlets framed the same event side by side, in English and Urdu together.
 
 ## Practical notes
 

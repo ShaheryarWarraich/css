@@ -1,0 +1,37 @@
+{
+  "source": "Evidence Extraction Criteria for the CSS Master Sheet (PDF, 45 criteria)",
+  "rule": {
+    "PK": "Pakistan-first relevance",
+    "SYL": "CSS syllabus relevance",
+    "MAP": "Argument-map compatibility",
+    "SRC": "Authoritative sourcing",
+    "NUM": "Specificity",
+    "TRD": "Trend value",
+    "CMP": "Comparative value",
+    "DIS": "Provincial / disaggregated value",
+    "LAW": "Constitutional / legal anchor",
+    "SOL": "Solution / reform evidence",
+    "XTOP": "Cross-topic connectivity"
+  },
+  "flag": {
+    "RANK": "Ranking story: a rank change may reflect other countries, not Pakistan",
+    "STOCKFLOW": "Stock and flow figures appear together: keep debt stock, borrowing, deficit, reserves separate",
+    "IMF": "IMF story: commitment, approval, disbursement and outstanding credit are different things",
+    "DEF": "Definition-sensitive indicator: state which definition and denominator",
+    "DENOM": "Denominator differs from the figure it is being compared with",
+    "CAUSAL": "Association reported as cause",
+    "HIST": "Historical figure: do not cite as current"
+  },
+  "judged": {
+    "keep": ["Argument utility", "Quality over quantity", "Final inclusion test", "Exam-time usefulness", "Interpretability"],
+    "role": ["Problem evidence", "Cause evidence", "Impact evidence", "Solution/reform evidence", "Progress evidence", "Counter-evidence", "Rebuttal utility", "Constitutional/legal anchors", "Case-study value", "Quotation utility"],
+    "use": ["CSS syllabus relevance", "Past-paper relevance", "Answer-building value"],
+    "map": ["Argument-map compatibility", "Causal-chain usefulness", "Evidence-bundle compatibility"],
+    "th": ["Theory linkage"],
+    "reuse": ["High reusability", "Cross-topic connectivity"],
+    "t1": ["Tier-1 potential", "Memorability"]
+  },
+  "extraction": ["Specificity", "Methodological clarity", "No denominator traps", "No definition mixing", "No false causality", "No ranking overinterpretation", "No commitment/disbursement confusion", "No stock/flow confusion", "Current vs historical distinction", "Source-conflict preservation", "Duplicate control", "Recency", "Historical significance", "Deployability", "Active-recall suitability"],
+  "roles": { "P": "Problem", "C": "Cause", "I": "Impact", "S": "Solution", "G": "Progress", "X": "Counter-evidence", "L": "Legal Anchor", "K": "Case Study", "Q": "Quotation" },
+  "papers": { "ESS": "Essay", "CA": "Current Affairs", "PA": "Pakistan Affairs", "IR": "International Relations", "GS": "Gender Studies", "PAD": "Public Administration", "CRIM": "Criminology", "ECO": "Economics", "ENV": "Environmental Science", "GOV": "Governance & Public Policy" }
+}

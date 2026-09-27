@@ -3,3 +3,7 @@ dist
 dev-dist
 .DS_Store
 *.local
+news/store/
+public/news/
+public/packs/candidates.json
+content/exports/

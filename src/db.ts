@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie'
 import type { Card } from 'ts-fsrs'
 import type { Chain, Fact, Pack, Proposal, ProposalFields } from './content/types'
+import type { Candidate } from './news/types'
 
 export interface ItemRow {
   id: string
@@ -44,6 +45,25 @@ export interface ProposalRow extends Proposal {
   decidedAt?: number
 }
 
+export type CandidateEdit = Pick<Candidate, 'title' | 'value' | 'period' | 'src' | 'proves' | 'method' | 'theme'>
+export interface CandidateRow extends Candidate {
+  edited?: CandidateEdit
+  note?: string
+  reviewer?: string
+  decidedAt?: number
+  /** reviewer confirmed the figure against the primary source, not just the newspaper */
+  primaryChecked?: boolean
+  /** reviewer chose to keep the existing fact and add this one beside it */
+  asNew?: boolean
+}
+
+export interface NewsMark {
+  id: string
+  read?: boolean
+  star?: boolean
+  at: number
+}
+
 export interface Settings {
   examDate: string
   minutesPerDay: number
@@ -68,6 +88,8 @@ class CssDb extends Dexie {
   logs!: Table<LogRow, number>
   kv!: Table<{ key: string; value: unknown }, string>
   proposals!: Table<ProposalRow, string>
+  candidates!: Table<CandidateRow, string>
+  newsMarks!: Table<NewsMark, string>
   constructor() {
     super('css-os')
     this.version(1).stores({
@@ -77,6 +99,7 @@ class CssDb extends Dexie {
       kv: 'key',
     })
     this.version(2).stores({ proposals: 'id, factId, status' })
+    this.version(3).stores({ candidates: 'id, status', newsMarks: 'id' })
   }
 }
 export const db = new CssDb()
@@ -154,26 +177,38 @@ export function applyProposals(facts: Fact[], rows: ProposalRow[]): Fact[] {
   })
 }
 
+export async function mergeCandidates(list: Candidate[]): Promise<number> {
+  let added = 0
+  await db.transaction('rw', db.candidates, async () => {
+    const have = new Set((await db.candidates.toArray()).map((p) => p.id))
+    for (const c of list) if (!have.has(c.id)) { await db.candidates.put({ ...c }); added++ }
+  })
+  return added
+}
+
 export async function exportReview(): Promise<string> {
   const rows = (await db.proposals.toArray()).filter((p) => p.status !== 'pending')
-  return JSON.stringify({ format: 'css-os-review', version: 1, exportedAt: new Date().toISOString(), decisions: rows }, null, 1)
+  const candidates = (await db.candidates.toArray()).filter((p) => p.status !== 'pending')
+  return JSON.stringify({ format: 'css-os-review', version: 2, exportedAt: new Date().toISOString(), decisions: rows, candidates }, null, 1)
 }
 
 export async function exportState(): Promise<string> {
-  const [cards, logs, kv, items, proposals] = await Promise.all([db.cards.toArray(), db.logs.toArray(), db.kv.toArray(), db.items.toArray(), db.proposals.toArray()])
-  return JSON.stringify({ format: 'css-os-state', version: 2, exportedAt: new Date().toISOString(), cards, logs, kv, items, proposals })
+  const [cards, logs, kv, items, proposals, candidates, newsMarks] = await Promise.all([db.cards.toArray(), db.logs.toArray(), db.kv.toArray(), db.items.toArray(), db.proposals.toArray(), db.candidates.toArray(), db.newsMarks.toArray()])
+  return JSON.stringify({ format: 'css-os-state', version: 3, exportedAt: new Date().toISOString(), cards, logs, kv, items, proposals, candidates, newsMarks })
 }
 
 export async function importState(json: string): Promise<void> {
   const s = JSON.parse(json)
   if (s.format !== 'css-os-state') throw new Error('Not a CSS OS backup file.')
   const revive = (c: CardRow): CardRow => ({ ...c, card: { ...c.card, due: new Date(c.card.due), last_review: c.card.last_review ? new Date(c.card.last_review) : undefined } })
-  await db.transaction('rw', db.items, db.cards, db.logs, db.kv, db.proposals, async () => {
-    await Promise.all([db.items.clear(), db.cards.clear(), db.logs.clear(), db.kv.clear(), db.proposals.clear()])
+  await db.transaction('rw', [db.items, db.cards, db.logs, db.kv, db.proposals, db.candidates, db.newsMarks], async () => {
+    await Promise.all([db.items.clear(), db.cards.clear(), db.logs.clear(), db.kv.clear(), db.proposals.clear(), db.candidates.clear(), db.newsMarks.clear()])
     await db.items.bulkPut(s.items)
     await db.cards.bulkPut(s.cards.map(revive))
     await db.logs.bulkPut(s.logs)
     await db.kv.bulkPut(s.kv)
     if (s.proposals) await db.proposals.bulkPut(s.proposals)
+    if (s.candidates) await db.candidates.bulkPut(s.candidates)
+    if (s.newsMarks) await db.newsMarks.bulkPut(s.newsMarks)
   })
 }

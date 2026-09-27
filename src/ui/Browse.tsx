@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Fact } from '../content/types'
 import { db, type CardRow, type Settings } from '../db'
+import { CandidateReview } from './CandidateReview'
 import { Review } from './Review'
 
 export function Browse({ settings, onSettings }: { settings: Settings; onSettings: (s: Settings) => void }) {
   const [view, setView] = useState<'browse' | 'review'>('browse')
   const [pending, setPending] = useState(0)
+  const [pendingNews, setPendingNews] = useState(0)
+  const [queue, setQueue] = useState<'tier1' | 'news'>('tier1')
   const [facts, setFacts] = useState<Fact[]>([])
   const [cards, setCards] = useState<Map<string, CardRow>>(new Map())
   const [q, setQ] = useState('')
@@ -16,6 +19,7 @@ export function Browse({ settings, onSettings }: { settings: Settings; onSetting
     db.items.where('kind').equals('fact').toArray().then((rows) => setFacts(rows.filter((r) => !r.retired).map((r) => r.data as Fact)))
     db.cards.toArray().then((cs) => setCards(new Map(cs.map((c) => [c.id, c]))))
     db.proposals.where('status').equals('pending').count().then(setPending)
+    db.candidates.where('status').equals('pending').count().then(setPendingNews)
   }, [view])
 
   const themes = useMemo(() => [...new Set(facts.map((f) => f.theme))].sort(), [facts])
@@ -35,11 +39,21 @@ export function Browse({ settings, onSettings }: { settings: Settings; onSetting
       <h1>Evidence bank</h1>
       <div className="seg">
         <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}>Browse</button>
-        <button className={view === 'review' ? 'on' : ''} onClick={() => setView('review')}>Review{pending ? ` (${pending})` : ''}</button>
+        <button className={view === 'review' ? 'on' : ''} onClick={() => setView('review')}>Review{pending + pendingNews ? ` (${pending + pendingNews})` : ''}</button>
       </div>
     </div>
   )
-  if (view === 'review') return <>{header}<Review settings={settings} onSettings={onSettings} /></>
+  if (view === 'review')
+    return (
+      <>
+        {header}
+        <div className="row">
+          <button className={queue === 'tier1' ? 'opt on' : 'opt'} onClick={() => setQueue('tier1')}>Tier 1 drafts <span className="muted">({pending})</span></button>
+          <button className={queue === 'news' ? 'opt on' : 'opt'} onClick={() => setQueue('news')}>New evidence <span className="muted">({pendingNews})</span></button>
+        </div>
+        {queue === 'tier1' ? <Review settings={settings} onSettings={onSettings} /> : <CandidateReview settings={settings} onSettings={onSettings} />}
+      </>
+    )
 
   return (
     <>
